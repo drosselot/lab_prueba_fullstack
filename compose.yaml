@@ -1,0 +1,39 @@
+services:
+
+  app:
+    image: node:18-alpine
+    command: sh -c "npm install && npm run build && npm run start"
+    ports:
+      - 127.0.0.1:1515:1515
+    working_dir: /app
+    volumes:
+      - ./pokemon-tcg:/app
+
+  api:
+    image: node:18-alpine
+    command: sh -c "npm install && npm run build && npm run start"
+    ports:
+      - 127.0.0.1:1414:1414
+    working_dir: /api
+    volumes:
+      - ./pokemon-tcg-api:/api
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ash
+      POSTGRES_DB: ash
+    ports:
+      - "5432:5432"
+    volumes:
+    - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ash"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
