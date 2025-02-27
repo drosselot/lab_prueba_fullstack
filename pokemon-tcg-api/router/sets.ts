@@ -33,7 +33,7 @@ setsRouter.get("/:id/cards", async (request: Request, response: Response) => {
     });
 
     if (set) {
-      response.status(200).send(set);
+      response.status(200).send(set.card);
       return;
     }
 
