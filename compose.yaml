@@ -4,7 +4,7 @@ services:
     image: node:18-alpine
     command: sh -c "npm install && npm run build && npm run start"
     ports:
-      - 127.0.0.1:443:443
+      - 127.0.0.1:3000:3000
     working_dir: /app
     volumes:
       - ./pokemon-tcg:/app
