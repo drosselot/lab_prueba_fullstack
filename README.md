@@ -1,5 +1,9 @@
 # Documentación prueba fullstack: Pokémon TCG
 
+## Aplicación levantada en AWS EC2
+- Web App: http://ec2-18-118-82-37.us-east-2.compute.amazonaws.com/
+- Api: http://ec2-18-118-82-37.us-east-2.compute.amazonaws.com/api
+
 ## Tecnologías Utilizadas
 - **Node.js** con **Express** como framework para el backend.
 - **PostgreSQL** como base de datos.
