@@ -3,8 +3,8 @@
 type PokemonCard = {
   id: string,
   name: string,
-  supertype: string,
-  subtypes: string[],
+  supertype?: string,
+  subtypes?: string[],
   types: string[],
   set_id: string,
   number: string,

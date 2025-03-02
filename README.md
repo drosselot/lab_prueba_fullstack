@@ -1,98 +1,125 @@
-# Prueba Fullstack - Pokémon TCG API y Frontend
+# Documentación prueba fullstack: Pokémon TCG
 
-¡Bienvenido a la prueba técnica para desarrolladores Fullstack! En esta prueba, trabajarás con una base de datos que contiene información de los sets y cartas del juego Pokémon TCG. Tu objetivo será construir un backend con una API REST y un frontend para listar y visualizar esta información. 
+## Tecnologías Utilizadas
+- **Node.js** con **Express** como framework para el backend.
+- **PostgreSQL** como base de datos.
+- **Prisma** como ORM para la manipulación de la base de datos.
+- **NextJS** para frontend con **React**
+- **Docker** para configurar el desarrollo y despliegue.
 
-## Objetivo de la Prueba
+## Instalación y Configuración
+### Requisitos Previos
+- Tener **Docker Engine** instalado. Para sistema Linux es posible instalarlo directamente, para otros sistemas es necesario instalar **Docker Desktop**. (https://docs.docker.com/engine/install/)
 
-1. **Backend**:
-   - Implementar un backend con una API REST utilizando la base de datos provista (PostgreSQL).
-   - Construir endpoints para listar:
-     - Los sets disponibles.
-     - Las cartas correspondientes a cada set.
-     - (Opcional) Información detallada de una carta específica.
+### Configuración del Proyecto
+1. Clonar el repositorio:
+   ```sh
+   git clone https://github.com/drosselot/lab_prueba_fullstack.git
+   cd LAB_PRUEBA_FULLSTACK
+   ```
 
-2. **Frontend**:
-   - Construir una aplicación web para:
-     - Listar los sets disponibles.
-     - Mostrar las cartas correspondientes a cada set.
-     - (Opcional) Visualizar información detallada de una carta en una vista individual.
+2. Configurar variables de entorno:
 
-3. **Infraestructura**:
-   - Usar Docker para la configuración del entorno de desarrollo, incluyendo la base de datos y la API.
+   Crear un archivo `.env` en la raíz del proyecto con una contraseña de la forma (se recomienda cambiar por una personal):
+   ```env
+   POSTGRES_PASSWORD=PASSWORD
+   ```
 
-## Requisitos
+   Crear un archivo `.env` en la carpeta `/pokemon-tcg` con el siguiente contenido (para hacer deploy es necesario cambiar la url a donde esté deployeada la api):
+   ```env
+   NEXT_PUBLIC_API_URL="http://localhost:1414"
+   ```
 
-### Obligatorios
-- Backend en **Node.js**, **Python** (Flask/Django), o cualquier lenguaje de tu preferencia.
-- Frontend en **React**, **Vue**, **Nextjs** o **Astro**.
-- Documentación clara de los endpoints en el backend.
+   Crear un archivo `.env` en la carpeta `/pokemon-tcg-api` con el siguiente contenido (es necesario cambiar la palabra password por la contraseña elegida anteriormente):
+   ```env
+    DATABASE_URL="postgresql://ash:password@db:5432/ash?schema=public"
+   ```
 
-### Suma Puntos
-Sabemos que tu tiempo es valioso!, asi que si si logras implementar alguno de estos aspectos podrás sumar algunos punto extras
 
-- Implementar una vista individual para cada carta en el frontend.
-- Añadir un buscador o filtro en el frontend para buscar cartas por nombre, rareza, o tipo.
-- Usar Tailwind para estilizar el frontend.
-- Desplegar la base de datos PostgreSQL mediante Docker.
-- Desplegar la aplicación mediante Docker.
+3. Comenzar el daemon de docker. Si se cuenta con Docker Desktop, es necesario iniciar la aplicación de escritorio e iniciar sesión. En otro caso seguir la documentación: (https://docs.docker.com/engine/daemon/start/)
 
-## Base de Datos
-El esquema de la base de datos contiene las siguientes tablas:
+4. Levantar la aplicación con docker compose desde el root del proyecto (en caso de querer correr en background agregar --detach):
+   ```sh
+   docker compose up --build
+   ```
 
-1. **set**:
-   - Información sobre los sets de cartas (nombre, serie, cantidad total, fecha de lanzamiento, etc.).
+La api se encontrará en localhost:1414 y la aplicación web en localhost:443
 
-2. **card**:
-   - Información de las cartas (nombre, supertipo, subtipo, rareza, etc.).
-   - Relación con un set específico.
+## Endpoints de la API
 
-3. **image**:
-   - URLs de imágenes de las cartas.
+### 1. Listar todos los sets
+**GET /sets**
+#### Respuesta:
+```json
+[
+  {
+    "id": string,
+    "name": string,
+    "series": string,
+    "printed_total": int,
+    "total": int,
+    "ptcgo_code": string,
+    "release_date": string (en formato Date Time String Format),"updated_at": string (en formato Date Time String Format),"symbol_url": string,
+    "logo_url": string
+  }
+  ...
+]
+```
 
-4. **market**:
-   - Información del mercado relacionada con las cartas.
+### 2. Obtener cartas de un set específico
+**GET /sets/:id/cards**
+#### Parámetros:
+- `id` - ID del set
+#### Respuesta:
+```json
+[
+  {
+    "id": string,
+    "name": string,
+    "supertype": string,
+    "subtypes": string[],
+    "types": string[],
+    "set_id": string,
+    "number": string,
+    "rarity": string
+  }
+]
+```
 
-Puedes ver el esquema completo en el archivo `resources/database-diagram.png` incluido.
+### 3. Obtener información detallada de una carta
+**GET /cards/:id**
+#### Parámetros:
+- `id` - ID de la carta
+#### Respuesta:
+```json
+{
+  "id": string,
+  "name": string,
+  "supertype": string,
+  "subtypes": string[],
+  "types": string[],
+  "set_id": string,
+  "number": string,
+  "rarity": string,
+  "market": [
+    {
+      "id": string,
+      "card_id": string,
+      "url": string,
+      "updated_at": string (en formato Date Time String Format),
+      "market": string
+    },
+    ...
+  ],
+  "image": [
+    {
+      "id": string,
+      "card_id": string,
+      "url": string,
+      "type": string
+    },
+    ...
+  ]
+}
+```
 
-## Instrucciones
-
-1. **Configuración del Entorno**:
-   - Clona este repositorio.
-   - Carga la base de datos en PostgreSQL usando el backup incluido (`database_backup.sql`).
-   - (Opcional) Configura un contenedor Docker para la base de datos.
-
-2. **Backend**:
-   - Configura tu backend para conectarse a la base de datos PostgreSQL.
-   - Implementa los siguientes endpoints:
-     - `GET /sets`: Lista todos los sets.
-     - `GET /sets/:id/cards`: Lista todas las cartas de un set específico.
-     - (Opcional) `GET /cards/:id`: Devuelve información detallada de una carta.
-
-3. **Frontend**:
-   - Construye una interfaz de usuario que:
-     - Liste los sets disponibles.
-     - Muestra las cartas de un set seleccionado.
-     - (Opcional) Visualiza información detallada de una carta.
-
-4. **Ejecución**:
-   - Proporciona instrucciones claras en este archivo para ejecutar la aplicación.
-   - (Opcional) Usa Docker Compose para levantar la base de datos, el backend y el frontend.
-
-## Entrega
-
-Por favor, entrega tu solución de la siguiente manera:
-- Un repositorio en GitHub con el código del backend, frontend, y los archivos de configuración de Docker.
-- Instrucciones claras en este archivo para ejecutar la aplicación.
-- (Opcional) Un enlace a un despliegue funcional (por ejemplo, en Heroku, Vercel, o similares).
-- **Tienes 1 semana para entregar una vez aceptado el desafío**
-
-## Evaluación
-
-Se evaluará:
-- Correcta implementación de los endpoints requeridos.
-- Funcionalidad y diseño del frontend.
-- Organización y claridad del código.
-- Documentación.
-- Implementación de las características opcionales (si aplica).
-
-¡Buena suerte y que la creatividad te acompañe!
