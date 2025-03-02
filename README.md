@@ -44,7 +44,7 @@
    ```
    * Comentarios para Ubuntu: es necesario correr este comando con sudo. También es necesario detener las instancias de postgres que se puedan estar corriendo en el puerto 5432 con: `sudo systemctl postgresql stop`
 
-La api se encontrará en localhost:1414 y la aplicación web en localhost:443
+La api se encontrará en localhost:1414 y la aplicación web en localhost:1329
 
 ## Endpoints de la API
 
